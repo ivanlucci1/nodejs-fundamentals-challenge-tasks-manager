@@ -1,0 +1,11 @@
+title,description
+Code Review,Review pull requests from team members and provide feedback by end of day.
+Sprint Planning,Prepare agenda and story breakdown for the next sprint with the product team.
+Refactor Authentication Module,Improve code readability and modularity in the auth service.
+Optimize Database Queries,Analyze slow endpoints and refactor inefficient SQL queries.
+Tech Interview with Candidate,Conduct technical interview for senior front-end developer position.
+Update CI/CD Pipeline,Integrate automated tests into the deployment pipeline using GitHub Actions.
+Document New API Endpoints,Write technical documentation for newly released REST endpoints.
+Sync with Frontend Team,Align on API contracts and upcoming breaking changes before release.
+Investigate Production Bug,Reproduce and fix bug reported by customer in the billing service.
+Experiment with New Framework,Test capabilities of Bun runtime and evaluate integration potential.
