@@ -7,8 +7,8 @@ A robust and minimalistic **Tasks Manager** application built with **Node.js** a
 ## ✨ Features
 
 - ✅ Basic CRUD operations (Create, Read, Update, Delete)
-- ✅ Mark tasks as complete
-- 📥 Bulk upload tasks via CSV file
+- ✅ Mark tasks as complete (toggle)
+- 📥 Bulk upload tasks via CSV file (with import script)
 - 🔍 Search tasks by title or description
 - 💾 JSON-based in-memory database
 - 🧱 Built only with Node.js core modules + TypeScript (no frameworks)
@@ -104,11 +104,14 @@ PUT /tasks/:id
 
 ---
 
-### ✅ Mark Task as Complete
+### ✅ Mark Task as Complete (Toggle)
 
 ```
 PATCH /tasks/:id/complete
 ```
+
+- If the task is incomplete, it will be marked as complete.
+- If the task is already complete, it will be marked as incomplete.
 
 ---
 
@@ -120,19 +123,30 @@ DELETE /tasks/:id
 
 ---
 
-### 📤 Bulk Upload Tasks (CSV)
+## 📤 Bulk Upload Tasks (CSV)
 
-```
-POST /tasks/upload
-```
+You can import multiple tasks at once using a CSV file and the provided import script.
 
-- Reads file from `src/data/example-tasks.csv`
-- **CSV Format:**
+- **CSV file:** [`src/streams/tasks.csv`](src/streams/tasks.csv)
+- **Script:** [`src/streams/import-csv.ts`](src/streams/import-csv.ts)
+
+### 📥 How to Import Tasks from CSV
+
+1. Make sure your server is running (`npm run dev` or `npm start`).
+2. Edit `src/streams/tasks.csv` to add your tasks (see format below).
+3. In a new terminal, run:
+   ```bash
+   npx tsx src/streams/import-csv.ts
+   ```
+   This will POST each row as a new task to your running server.
+
+**CSV Format:**
 
 ```csv
 title,description
 Task 1,Description 1
 Task 2,Description 2
+...etc
 ```
 
 ---
@@ -158,27 +172,15 @@ Task 2,Description 2
 nodejs-fundamentals-challenge_tasks-manager/
 ├── db.json                  # Persistent data file
 ├── src/
-│   ├── data/                # Sample CSV data
-│   ├── middlewares/        # Custom middleware
-│   ├── routes/             # API route handlers
-│   ├── streams/            # File stream utilities
-│   ├── types/              # TypeScript type definitions
-│   ├── utils/              # Utility functions
-│   └── index.ts            # Application entry point
+│   ├── middlewares/         # Custom middleware
+│   ├── routes.ts            # API route handlers
+│   ├── streams/             # CSV import script & tasks.csv
+│   │   ├── import-csv.ts    # CSV import script
+│   │   └── tasks.csv        # CSV data for import
+│   ├── types/               # TypeScript type definitions
+│   ├── utils/               # Utility functions
+│   └── server.ts            # Application entry point
 └── package.json
-```
-
----
-
-## 🗂 Example CSV Upload
-
-Sample file: [`src/data/example-tasks.csv`](src/data/example-tasks.csv)
-
-```csv
-title,description
-Code Review,Review pull requests and provide feedback.
-Sprint Planning,Prepare next sprint agenda and breakdown.
-...
 ```
 
 ---
@@ -188,7 +190,8 @@ Sprint Planning,Prepare next sprint agenda and breakdown.
 - Data is saved to `db.json` in the project root.
 - This project does **not** include authentication.
 - No third-party frameworks or libraries.
-- You can customize the upload file by editing `src/data/example-tasks.csv`.
+- You can customize the upload file by editing `src/streams/tasks.csv`.
+- To import tasks, use the import script as described above.
 
 ---
 

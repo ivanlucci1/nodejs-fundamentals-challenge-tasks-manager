@@ -1,13 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
-import type { Route } from '../types/route.js';
-import type { Task } from '../types/task.js';
+import type { Route } from './types/route.js';
+import type { Task } from './types/task.js';
 
-import { Database } from '../database.js';
+import { Database } from './database.js';
 
-import { buildRoutePath } from '../utils/build-route-path.js';
-import { processTasksFile } from '../streams/process-tasks-file.js';
-import { validateTasksFields } from '../utils/validate-tasks-fields.js';
+import { buildRoutePath } from './utils/build-route-path.js';
 
 const database = new Database();
 
@@ -80,15 +78,9 @@ export const routes: Route[] = [
 				);
 			}
 
-			const invalidFields = validateTasksFields(req.body);
-
-			if (invalidFields.length > 0) {
-				return res.writeHead(400).end(`The following fields are missing: ${invalidFields.join(', ')}`);
-			}
-
 			database.update('tasks', id, {
-				title,
-				description,
+				title: title ?? task.title,
+				description: description ?? task.description,
 				updated_at: new Date(),
 			});
 
@@ -111,9 +103,10 @@ export const routes: Route[] = [
 				);
 			}
 
-			database.update('tasks', id, {
-				completed_at: new Date(),
-			});
+			const isTaskCompleted = !!task.completed_at;
+			const completed_at = isTaskCompleted ? null : new Date();
+
+			database.update('tasks', id, { completed_at });
 
 			return res.writeHead(201).end();
 		},
@@ -131,34 +124,6 @@ export const routes: Route[] = [
 			}
 
 			database.delete('tasks', id);
-
-			return res.writeHead(204).end();
-		},
-	},
-	{
-		method: 'POST',
-		path: buildRoutePath('/tasks/upload'),
-		handler: async (req, res) => {
-			const tasksFile = await processTasksFile();
-
-			await new Promise((resolve) => {
-				tasksFile.slice(1).forEach((row) => {
-					const task: Task = {
-						id: randomUUID(),
-						title: row[0] ?? '',
-						description: row[1] ?? '',
-						completed_at: null,
-						created_at: new Date(),
-						updated_at: new Date(),
-					};
-
-					database.insert('tasks', task);
-				});
-
-				setTimeout(() => {
-					resolve(null);
-				}, 1000);
-			});
 
 			return res.writeHead(204).end();
 		},

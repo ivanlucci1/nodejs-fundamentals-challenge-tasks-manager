@@ -31,7 +31,9 @@ export class Database {
 		if (search) {
 			data = data.filter((row) => {
 				return Object.entries(search).some(([key, value]) => {
-					return String(row[key]).toLowerCase().includes(String(value).toLowerCase());
+					if (!value) return true;
+
+					return String(row[key])?.includes(String(value));
 				});
 			});
 		}
@@ -55,7 +57,8 @@ export class Database {
 		const rowIndex = this.#database[table].findIndex((row) => row.id === id);
 
 		if (rowIndex > -1) {
-			this.#database[table][rowIndex] = { ...this.#database[table][rowIndex], ...data };
+			const row = this.#database[table][rowIndex];
+			this.#database[table][rowIndex] = { id, ...row, ...data };
 			this.#persist();
 		}
 
